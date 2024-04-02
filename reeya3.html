@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Permanent+Marker&family=Vina+Sans&display=swap" rel="stylesheet">
+<style>
+input {
+	font-size: 22px;
+}
+
+body {
+  font-family: 'Permanent Marker', cursive;
+  margin: 0 auto;
+  max-width: 600px;
+  background: blue;
+}
+div {
+  height: 500px;
+  background-size: cover;
+  position: relative;
+  margin: 40px 0 0 0;
+  border-radius: 12px;
+}
+h1 {
+  font-family: 'Dancing Script', cursive;
+  text-align: center;
+  font-size: 75px;
+  color: pink;
+  margin: 60px 0 0 0;
+}
+h2 {
+  text-align: center;
+  color: pink;
+  margin: 0px 0 70px 0;
+}
+p {
+  color: pink;
+  background:pink ;
+  background: linear-gradient(bottom, rgba(5,5,5,1), rgba(5,5,5,.4));
+  background: -webkit-linear-gradient(bottom, rgba(225,5,1,1), rgba(5,0,0,.4));
+  background: -moz-linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));
+  padding: 10px;
+  line-height: 28px;
+  text-align: justify;
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  height: 20px;
+  transition: height .5s;
+  -webkit-transition: height .5s;
+  -moz-transition: height .5s;
+}
+
+small {
+  opacity: 0;
+}
+
+.show-description p {
+  height: 150px;
+}
+
+.show-description small {
+  opacity: 1;
+}
+
+.first{
+  background-image: url("https://globalassets.starbucks.com/digitalassets/products/bev/SBX20181217_DragonDrink.jpg?impolicy=1by1_wide_topcrop_630");
+}
+.second{
+  background-image: url("https://globalassets.starbucks.com/digitalassets/products/bev/SBX20181217_PinkDrink.jpg?impolicy=1by1_wide_topcrop_630");
+}
+.dessert{
+  background-image: url("https://globalassets.starbucks.com/digitalassets/products/bev/SBX20211217_ParadiseDrink.jpg?impolicy=1by1_wide_topcrop_630");
+}
+.price {
+  float: right;
+}
+@media (max-width: 500px) {
+  h1 {
+    font-size: 50px;
+    margin-top: 20px;
+    line-height: 40px;
+  }
+  h2 {
+    font-size: 20px;
+    margin: 20px 0 30px 0;
+  }
+  div {
+    margin: 20px 12px 0 12px;
+  }
+  p {
+    font-size: 20px;
+    line-height: 24px;
+  }
+  small {
+    font-size: 16px;
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+<h1>Starbucks</h1>
+<h2>Best Drinks </h2>
+
+<div class="first">
+<input type="number" min="0" style="width: 50px" class="quantities">
+
+  <p>Dragon Drink - Grande <span class="price">$5.75</span><br />
+  <small> Dragon Fruit BASE WITH Coconut Milk </small></p>
+</div>
+
+<div class="second">
+<input type="number" min="0" style="width: 50px" class="quantities">
+  <p>Pink Drink - Grande <span class="price">$5.75</span><br />
+  <small>Strawberry Acai BASE WITH Coconut Milk</small></p>
+</div>
+ 
+<div class="dessert">
+<input type="number" min="0" style="width: 50px" class="quantities">
+  <p>Paradise Drink - Grande <span class="price">$5.75</span><br />
+  <small>Pineapple+Passionfruit BASE with Coconut Milk</small></p>
+</div>
+<br><br>
+  <input type="users name" placeholder="Users Name" id="Name">
+  <input type="email" placeholder="Your email" id="Email">
+  <input type="submit" id="submit">
+<br><br>
+
+<script>
+  $('div').on('click', function() {
+      $(this).toggleClass('show-description');
+  });
+</script>
+
+</body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDGK1PlT2ZIQVVNkhJgcAmcRouWwiIsYXk",
+    authDomain: "reeya3-4752c.firebaseapp.com",
+    projectId: "reeya3-4752c",
+    storageBucket: "reeya3-4752c.appspot.com",
+    messagingSenderId: "945083348945",
+    appId: "1:945083348945:web:44e760e5af7765ce8e52f0"
+  };
+
+  // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+  	const db = getDatabase(app);
+	
+	
+	
+    const Name = document.querySelector("#Name") 
+	const Email = document.querySelector("#Email")
+	document.querySelector('#submit').addEventListener('click', Submit)
+	const quantities = document.querySelectorAll(".quantities")
+	const itemsList = ["Dragon Drink", "Pink Drink", "Paradise Drink"]
+	const prices = document.querySelectorAll(".price")
+		
+	
+	function Submit() {
+	  const timestamp = buildTimestamp()
+	  let total = 0
+  	  let cart = { }
+  	  for  (let i=0; i<quantities.length; i=i+1) {
+  	  	if (quantities[i].value != "0" && quantities[i].value != "") {	
+			let price = prices[i].innerHTML.replace('$', '')
+			total = total + quantities[i].value * price 
+  	  		
+			cart[itemsList[i]] = parseInt(quantities[i].value) 
+  	  	}
+  	  	quantities[i].value = ""
+  	  }
+		
+  
+	  set(ref(db, timestamp), {
+		  Name: Name.value,
+	      email: Email.value,
+		  cart: cart,
+		  totalPrice: total,
+		  paid: "not yet",
+		  
+	  });
+
+	  Name.value = ""
+	  Email.value = ""
+	}
+
+
+	function buildTimestamp() {
+	  const now = new Date();
+	  let timestamp = now.getFullYear().toString() + "/";
+	  //const month = now.toLocaleString('default', { month: 'long' });
+
+	  let month = now.getMonth()+1   //add 1 because Javascript uses 0 for January
+	  month = month.toString()
+	  month = addLeadingZero(month)
+	  timestamp += month + "/"; 
+
+	  let date = now.getDate().toString()
+	  date = addLeadingZero(date)
+	  timestamp += date + "/";
+
+	  let hours = now.getHours().toString()
+	  hours = addLeadingZero(hours)
+	  timestamp += hours + ":";
+
+	  let minutes = now.getMinutes().toString()
+	  minutes = addLeadingZero(minutes)
+	  timestamp += minutes + ":";
+
+	  let seconds = now.getSeconds().toString()
+	  seconds = addLeadingZero(seconds)
+	  timestamp += seconds;
+
+	  return timestamp
+	}
+
+	function addLeadingZero(units) {
+		if (units.length < 2) {
+			units = "0" + units
+		}
+		return units
+	}
+	
+	
+	
+	
+</script>
